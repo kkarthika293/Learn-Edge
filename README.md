@@ -107,6 +107,6 @@ http://127.0.0.1:5000/
 
 📧 Contact
 
-👤 PraveenKumar
-📩 Email: praveenkumaru101@gmail.com
+👤 Karthika.K
+📩 Email: kkarthika2930@gmail.com
 🔗 GitHub: https://github.com/PraveenKumar293
