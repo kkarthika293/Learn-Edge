@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Common Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --error-color: #f72585;
+            --success-color: #4cc9f0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+        
+        .register-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            margin: 0 0 25px 0;
+            font-size: 1.8rem;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            transition: color 0.3s;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+        
+        .form-control:focus + i {
+            color: var(--primary-color);
+        }
+        
+        .password-strength {
+            height: 4px;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0%;
+            background-color: var(--error-color);
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .terms {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .terms a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input:invalid:not(:placeholder-shown) {
+            border-color: var(--error-color);
+        }
+        
+        input:invalid:not(:placeholder-shown) + i {
+            color: var(--error-color);
+        }
+        
+        input:invalid:not(:placeholder-shown) ~ .error-message {
+            display: block;
+        }
+        
+        .show-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            cursor: pointer;
+        }
+        
+        .show-password:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h1>Create Your Account</h1>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-with-icon">
+                    <input type="text" id="username" name="username" class="form-control" 
+                           placeholder="Choose a username" required minlength="3" maxlength="20">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="error-message">Username must be 3-20 characters</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-with-icon">
+                    <input type="email" id="email" name="email" class="form-control" 
+                           placeholder="your@email.com" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <span class="error-message">Please enter a valid email</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <input type="password" id="password" name="password" class="form-control" 
+                           placeholder="Create a password" required minlength="8">
+                    <i class="fas fa-lock"></i>
+                    <span class="show-password" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-meter" id="strengthMeter"></div>
+                </div>
+                <span class="error-message">Password must be at least 8 characters</span>
+            </div>
+            
+            <div class="terms">
+                By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </form>
+        
+        <div class="login-link">
+            Already have an account? <a href="#">Sign in</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password visibility toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Password strength meter
+            passwordInput.addEventListener('input', function() {
+                const strengthMeter = document.getElementById('strengthMeter');
+                const strength = calculatePasswordStrength(this.value);
+                
+                strengthMeter.style.width = strength.percentage + '%';
+                strengthMeter.style.backgroundColor = strength.color;
+            });
+            
+            function calculatePasswordStrength(password) {
+                let strength = 0;
+                
+                // Length check
+                if (password.length > 10) strength += 30;
+                else if (password.length > 7) strength += 20;
+                else if (password.length > 4) strength += 10;
+                
+                // Character variety checks
+                if (/[A-Z]/.test(password)) strength += 15;
+                if (/[0-9]/.test(password)) strength += 15;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+                
+                // Common password check (simplified)
+                const commonPasswords = ['password', '123456', 'qwerty'];
+                if (commonPasswords.includes(password.toLowerCase())) strength = 10;
+                
+                // Cap at 100
+                strength = Math.min(strength, 100);
+                
+                // Determine color
+                let color;
+                if (strength < 30) color = var(--error-color);
+                else if (strength < 70) color = '#ffbe0b';
+                else color = '#38b000';
+                
+                return {
+                    percentage: strength,
+                    color: color
+                };
+            }
+            
+            // Form submission
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                // In a real app, you would validate and submit via AJAX
+                // This is just for demonstration
+                e.preventDefault();
+                alert('Registration would be processed here!\n(Form is ready for backend integration)');
+            });
+        });
+    </script>
+</body>
+</html>

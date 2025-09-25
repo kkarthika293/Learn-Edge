@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .sender-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .message-content {
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        
+        .message.sent {
+            align-items: flex-end;
+        }
+        
+        .message.sent .message-content {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .chat-form {
+            display: flex;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .logout-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logout-link:hover {
+            color: var(--warning-color);
+        }
+        
+        .logout-link i {
+            margin-right: 5px;
+        }
+        
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <h2><i class="fas fa-comments"></i> Common Chat Room</h2>
+            <div class="online-count">
+                <i class="fas fa-user-friends"></i>
+                <span id="onlineCount">0</span> online
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            {% for msg in messages %}
+                <div class="message {% if msg.sender_name == current_user %}sent{% endif %}">
+                    <div class="message-header">
+                        <span class="sender-name">{{ msg.sender_name }}</span>
+                        <span class="message-time"><i class="far fa-clock"></i> {{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div class="message-content">
+                        {{ msg.message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <form method="POST" class="chat-form">
+            <input type="text" name="message" class="chat-input" placeholder="Type your message here..." required>
+            <button type="submit" class="send-button">
+                <i class="fas fa-paper-plane"></i> Send
+            </button>
+        </form>
+    </div>
+    
+    <a href="{{ url_for('logout') }}" class="logout-link">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
+    <script>
+        // Auto-scroll to bottom of chat
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // You can add WebSocket or AJAX functionality here for real-time updates
+        // This is just a placeholder for online count functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate online users - in a real app, this would come from the server
+            document.getElementById('onlineCount').textContent = Math.floor(Math.random() * 10) + 1;
+        });
+    </script>
+</body>
+</html>

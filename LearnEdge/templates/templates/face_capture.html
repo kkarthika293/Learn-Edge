@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Capture</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4bb543;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .camera-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        #video {
+            width: 100%;
+            display: block;
+            background-color: #333;
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .preview-container {
+            display: none;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        #previewImage {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .flash.active {
+            opacity: 1;
+        }
+        
+        .permission-denied {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .permission-denied i {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-camera"></i> Webcam Capture</h1>
+        
+        <div class="camera-container">
+            <video id="video" width="640" height="480" autoplay playsinline></video>
+            <div class="flash" id="flash"></div>
+            <canvas id="canvas" style="display: none;"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="capture()">
+                <i class="fas fa-camera"></i> Capture Photo
+            </button>
+            <button class="btn btn-danger" onclick="stopCamera()">
+                <i class="fas fa-power-off"></i> Stop Camera
+            </button>
+        </div>
+        
+        <div class="preview-container" id="previewContainer">
+            <h3>Your Captured Photo</h3>
+            <img id="previewImage" alt="Captured photo preview">
+            <form method="POST" id="imgForm">
+                <input type="hidden" name="image" id="image">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Photo
+                </button>
+            </form>
+        </div>
+        
+        <div class="permission-denied" id="permissionDenied">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Camera Access Denied</h2>
+            <p>Please enable camera permissions to use this feature.</p>
+            <button class="btn btn-primary" onclick="initCamera()">
+                <i class="fas fa-sync-alt"></i> Try Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const imageInput = document.getElementById('image');
+        const flash = document.getElementById('flash');
+        const permissionDenied = document.getElementById('permissionDenied');
+        
+        let stream = null;
+        
+        // Initialize camera
+        function initCamera() {
+            permissionDenied.style.display = 'none';
+            
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'user' 
+                },
+                audio: false 
+            })
+            .then(function(s) {
+                stream = s;
+                video.srcObject = stream;
+                video.style.display = 'block';
+            })
+            .catch(function(err) {
+                console.error("Camera error: ", err);
+                video.style.display = 'none';
+                permissionDenied.style.display = 'block';
+            });
+        }
+        
+        // Capture photo
+        function capture() {
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Trigger flash effect
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 300);
+            
+            // Draw video frame to canvas
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get image data and show preview
+            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            previewImage.src = imageData;
+            imageInput.value = imageData;
+            previewContainer.style.display = 'block';
+            
+            // Scroll to preview
+            previewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Stop camera
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                previewContainer.style.display = 'none';
+            }
+        }
+        
+        // Start camera when page loads
+        window.addEventListener('DOMContentLoaded', initCamera);
+        
+        // Clean up when leaving page
+        window.addEventListener('beforeunload', stopCamera);
+    </script>
+</body>
+</html>

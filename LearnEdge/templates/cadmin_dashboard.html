@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edu Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-blend-mode: overlay;
+            background-color: rgba(245, 247, 251, 0.9);
+            color: var(--dark-color);
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar:hover {
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .sidebar .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background-color: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .welcome-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .stats-card .card-body {
+            padding: 20px;
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            opacity: 0.7;
+        }
+        
+        .border-left-primary {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .border-left-success {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .border-left-info {
+            border-left: 4px solid #00b4d8;
+        }
+        
+        .border-left-warning {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .course-item:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .badge {
+            padding: 8px 12px;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .analytics-img {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            height: auto;
+        }
+        
+        footer {
+            padding: 20px 0;
+            color: #6c757d;
+        }
+        
+        .navbar {
+            border-radius: 12px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 10px 0;
+        }
+        
+        .dropdown-item {
+            padding: 8px 20px;
+            font-weight: 500;
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse p-0">
+                <div class="position-sticky pt-3">
+                    <div class="text-center py-4">
+                        <h4 class="fw-bold text-white animate__animated animate__fadeIn">
+                            <i class="fas fa-graduation-cap me-2"></i>EduAdmin Pro
+                        </h4>
+                    </div>
+                    <ul class="nav flex-column px-3">
+                        <li class="nav-item animate__animated animate__fadeInUp">
+                            <a class="nav-link active" href="/educator/add_questions">
+                                <i class="fas fa-question-circle"></i>
+                                Questions Bank
+                            </a>
+                        </li>
+                        <li class="nav-item animate__animated animate__fadeInUp animate__delay-1s">
+                            <a class="nav-link" href="{{ url_for('create_course') }}">
+                                <i class="fas fa-plus-square"></i>
+                                Create Course
+                            </a>
+                        </li>
+                        <li class="nav-item animate__animated animate__fadeInUp animate__delay-2s">
+                            <a class="nav-link" href="/chat">
+                                <i class="fas fa-comments"></i>
+                                Student Chat
+                            </a>
+                        </li>
+                        <li class="nav-item animate__animated animate__fadeInUp animate__delay-3s">
+                            <a class="nav-link" href="/score">
+                                <i class="fas fa-chart-bar"></i>
+                                Test Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item animate__animated animate__fadeInUp animate__delay-4s">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-users"></i>
+                                Students
+                            </a>
+                        </li>
+                        <li class="nav-item animate__animated animate__fadeInUp animate__delay-4s">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-calendar-alt"></i>
+                                Schedule
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="px-3 mt-4">
+                        <div class="card bg-dark text-white animate__animated animate__fadeIn animate__delay-5s">
+                            <div class="card-body p-3 text-center">
+                                <i class="fas fa-lightbulb mb-2" style="font-size: 1.5rem;"></i>
+                                <p class="small mb-2">Need help with your courses?</p>
+                                <button class="btn btn-sm btn-outline-light rounded-pill">Get Support</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <!-- Top Navigation -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white rounded-3 mb-4">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav me-auto">
+                                <li class="nav-item">
+                                    <span class="nav-link text-dark fw-bold">
+                                        <i class="fas fa-home me-1"></i> Educator Dashboard
+                                    </span>
+                                </li>
+                            </ul>
+                            <div class="d-flex align-items-center">
+                                <div class="dropdown me-3">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-bell"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            3
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end p-0" style="width: 300px;">
+                                        <li class="p-3 border-bottom">
+                                            <h6 class="mb-0">Notifications (3)</h6>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item p-3 border-bottom" href="#">
+                                                <div class="d-flex">
+                                                    <div class="me-3 text-primary">
+                                                        <i class="fas fa-user-graduate"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="small mb-0">5 new students enrolled in your course</p>
+                                                        <small class="text-muted">2 hours ago</small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item p-3 border-bottom" href="#">
+                                                <div class="d-flex">
+                                                    <div class="me-3 text-success">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="small mb-0">Your course was approved</p>
+                                                        <small class="text-muted">1 day ago</small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item p-3" href="#">
+                                                <div class="d-flex">
+                                                    <div class="me-3 text-warning">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="small mb-0">3 assignments need grading</p>
+                                                        <small class="text-muted">2 days ago</small>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="p-2 text-center bg-light">
+                                            <a href="#" class="small">View All Notifications</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin" class="rounded-circle me-2 user-profile">
+                                        <span class="d-none d-sm-inline fw-medium">Prof. Smith</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> My Profile</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i> Messages</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="/"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Welcome Card -->
+                <div class="row mb-4 animate__animated animate__fadeIn">
+                    <div class="col-12">
+                        <div class="card welcome-card text-white">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h4 class="card-title fw-bold">
+                                            <i class="fas fa-chalkboard-teacher"></i> Welcome back, Professor Smith!
+                                        </h4>
+                                        <p class="card-text">You have 3 new messages and 5 assignments to grade today.</p>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url_for('create_course') }}" class="btn btn-light rounded-pill">
+                                                <i class="fas fa-plus me-1"></i> New Course
+                                            </a>
+                                            <a href="#" class="btn btn-outline-light rounded-pill">
+                                                <i class="fas fa-tasks me-1"></i> View Tasks
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 d-none d-md-block text-center">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3976/3976626.png" class="img-fluid" style="max-height: 150px;" alt="Welcome">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                        <div class="card stats-card border-left-primary h-100">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Courses</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|length }}</div>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 12% from last month</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-book-open text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                        <div class="card stats-card border-left-success h-100">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Total Students</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">248</div>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 8% from last month</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-graduate text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInUp animate__delay-2s">
+                        <div class="card stats-card border-left-info h-100">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Completion Rate</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">78%</div>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 5% from last month</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-check-circle text-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInUp animate__delay-3s">
+                        <div class="card stats-card border-left-warning h-100">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Avg. Rating</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.8/5.0</div>
+                                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i> 0.2 from last month</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="row mb-4">
+                    <div class="col-lg-8 mb-4">
+                        <div class="card animate__animated animate__fadeIn h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-line me-2"></i> Course Engagement
+                                </h5>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-calendar me-1"></i> Last 30 Days
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#">Today</a></li>
+                                        <li><a class="dropdown-item" href="#">This Week</a></li>
+                                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/566/566769.png" class="img-fluid analytics-img" width="100%" alt="Analytics">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card animate__animated animate__fadeIn h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-trophy me-2"></i> Top Courses
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    {% for course in courses|sort(attribute='views', reverse=true)|slice(3) %}
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 text-primary">
+                                                <i class="fas fa-medal"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">{{ course.name }}</h6>
+                                                <small class="text-muted">{{ course.views }} views</small>
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill">#{{ loop.index }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View All Courses</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Section -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card animate__animated animate__fadeIn">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-book-open me-2"></i> Your Courses
+                                </h5>
+                                <div>
+                                    <a href="{{ url_for('create_course') }}" class="btn btn-sm btn-primary me-2">
+                                        <i class="fas fa-plus me-1"></i> Add Course
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-filter me-1"></i> Filter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Course Name</th>
+                                                <th>Students</th>
+                                                <th>Progress</th>
+                                                <th>Rating</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for course in courses %}
+                                            <tr class="course-item">
+                                                <td class="fw-bold">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/2889/2889676.png" width="40" class="rounded me-3" alt="Course">
+                                                        <div>
+                                                            {{ course.name }}
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-primary rounded-pill">{{ course.students|default(0) }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ course.progress|default(75) }}%;" aria-valuenow="{{ course.progress|default(75) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <small class="text-muted">{{ course.progress|default(75) }}% complete</small>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="text-warning me-1">
+                                                            <i class="fas fa-star"></i>
+                                                        </span>
+                                                        <span>{{ course.rating|default(4.5) }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if course.active else 'secondary' }} rounded-pill">
+                                                        <i class="fas fa-{{ 'check-circle' if course.active else 'pause-circle' }} me-1"></i> 
+                                                        {{ 'Active' if course.active else 'Paused' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex gap-2">
+                                                        <a href="{{ url_for('edit_course', course_id=course.id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <form action="{{ url_for('delete_course', course_id=course.id) }}" method="POST" style="display:inline;">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')" data-bs-toggle="tooltip" title="Delete">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav aria-label="Page navigation" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-5 text-center text-muted">
+                    <p class="small">
+                        &copy; 2023 EduAdmin Pro. All rights reserved. 
+                        <a href="#" class="text-decoration-none">Privacy Policy</a> | 
+                        <a href="#" class="text-decoration-none">Terms of Service</a>
+                    </p>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Add animation when scrolling
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const animation = entry.target.getAttribute('data-animation');
+                        entry.target.classList.add(animation);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Sample chart for analytics
+            const ctx = document.createElement('canvas');
+            ctx.style.maxWidth = '100%';
+            ctx.height = 300;
+            
+            // Replace this with your actual chart implementation
+            // This is just a placeholder
+            document.querySelector('.analytics-img').replaceWith(ctx);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Course Engagement',
+                        data: [65, 59, 80, 81, 56, 72],
+                        backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

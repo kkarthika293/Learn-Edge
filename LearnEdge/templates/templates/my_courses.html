@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Courses</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4bb543;
+            --warning-color: #f0ad4e;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .domain-badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .courses-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .course-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .course-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--accent-color);
+        }
+        
+        .course-content {
+            padding: 1.5rem;
+        }
+        
+        .course-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        .course-description {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .course-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .meta-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .difficulty-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .beginner {
+            background-color: #e3f7e8;
+            color: var(--success-color);
+        }
+        
+        .intermediate {
+            background-color: #fff4e5;
+            color: var(--warning-color);
+        }
+        
+        .advanced {
+            background-color: #feecec;
+            color: var(--danger-color);
+        }
+        
+        .course-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .no-courses {
+            text-align: center;
+            padding: 3rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .no-courses i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        
+        .no-courses h2 {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .courses-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Your Recommended Courses</h1>
+            <div class="domain-badge">
+                <i class="fas fa-tag"></i> Domain: {{ current_user.domain }}
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        {% if courses %}
+            <div class="courses-container">
+                {% for course in courses %}
+                    <div class="course-card">
+                        {% if course.thumbnail %}
+                            <img src="{{ url_for('static', filename='uploads/' + course.thumbnail) }}" alt="Course thumbnail" class="course-thumbnail">
+                        {% else %}
+                            <div style="background-color: #e9ecef; height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-book-open" style="font-size: 3rem; color: #adb5bd;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="course-content">
+                            <h2 class="course-title">{{ course.name }}</h2>
+                            <p class="course-description">{{ course.description }}</p>
+                            
+                            <div class="course-meta">
+                                <div class="meta-item">
+                                    <i class="far fa-clock"></i> {{ course.duration }} hours
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-signal"></i> 
+                                    <span class="difficulty-badge {{ course.difficulty|lower }}">
+                                        {{ course.difficulty }}
+                                    </span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-layer-group"></i> {{ course.category }}
+                                </div>
+                            </div>
+                            
+                            <div class="course-actions">
+                                {% if course.pdf_file %}
+                                    <a href="{{ url_for('static', filename='uploads/' + course.pdf_file) }}" class="btn btn-primary" target="_blank">
+                                        <i class="fas fa-download"></i> Download PDF
+                                    </a>
+                                {% else %}
+                                    <span class="btn btn-outline" style="cursor: not-allowed;">
+                                        <i class="fas fa-download"></i> No PDF
+                                    </span>
+                                {% endif %}
+                                <a href="#" class="btn btn-outline">
+                                    <i class="far fa-bookmark"></i> Save
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-courses">
+                <i class="far fa-folder-open"></i>
+                <h2>No Courses Available for Your Domain</h2>
+                <p>We couldn't find any courses matching your domain. Please check back later or explore other domains.</p>
+                <a href="#" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-search"></i> Browse All Courses
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

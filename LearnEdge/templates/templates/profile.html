@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .user-profile {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #fff;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+        
+        .info-item i {
+            color: #667eea;
+            font-size: 18px;
+            width: 25px;
+        }
+        
+        h3 {
+            margin: 25px 0 15px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        
+        h3 i {
+            color: #764ba2;
+        }
+        
+        .scores-list {
+            list-style: none;
+        }
+        
+        .score-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        
+        .score-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .score-item h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .score-item h4 i {
+            color: #764ba2;
+        }
+        
+        .score-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #ddd;
+        }
+        
+        .no-scores {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-style: italic;
+            color: #ccc;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 5px;
+        }
+        
+        .role-admin {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .role-teacher {
+            background: linear-gradient(to right, #11998e, #38ef7d);
+        }
+        
+        .role-student {
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+    </style>
+</head>
+<body>
+    <div class="user-profile">
+        <div class="user-avatar">
+            {{ user.username[0].upper() }}
+        </div>
+        <h2>{{ user.username }}</h2>
+        
+        <div class="user-info">
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <span>Email: {{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-user-tag"></i>
+                <span>Role: 
+                    <span class="role-badge 
+                        {% if user.role == 'admin' %}role-admin
+                        {% elif user.role == 'teacher' %}role-teacher
+                        {% else %}role-student
+                        {% endif %}">
+                        {{ user.role }}
+                    </span>
+                </span>
+            </div>
+        </div>
+        
+        <h3><i class="fas fa-chart-line"></i> Your Course Scores</h3>
+        
+        {% if scores %}
+            <ul class="scores-list">
+                {% for score in scores %}
+                    <li class="score-item">
+                        <h4><i class="fas fa-book"></i> {{ score.topic }}</h4>
+                        <div class="score-details">
+                            <span><i class="fas fa-star"></i> Score: {{ score.score }}/100</span>
+                            <span><i class="far fa-calendar-alt"></i> {{ score.timestamp.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-scores">
+                <i class="far fa-folder-open" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <p>No scores recorded yet</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

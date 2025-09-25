@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Achievement</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .certificate-container {
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(135deg, #fff9f9 0%, #ffffff 100%);
+            border: 20px solid #d4af37;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .certificate-border {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid #d4af37;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .watermark {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 300px;
+            color: #d4af37;
+            z-index: 0;
+            transform: rotate(-30deg);
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            color: #333;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .certificate-body {
+            z-index: 1;
+            margin: 30px 0;
+        }
+        
+        .certificate-body h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #d4af37;
+            margin: 20px 0;
+        }
+        
+        .recipient-name {
+            font-size: 48px;
+            font-weight: 600;
+            color: #222;
+            margin: 30px 0;
+            padding: 10px 0;
+            border-top: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+            display: inline-block;
+        }
+        
+        .course-info {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        
+        .score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d4af37;
+            margin: 15px 0;
+        }
+        
+        .signatures {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 50px;
+        }
+        
+        .signature {
+            text-align: center;
+        }
+        
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: #333;
+            margin: 0 auto 10px;
+        }
+        
+        .date {
+            margin-top: 30px;
+            font-style: italic;
+        }
+        
+        .seal {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            width: 100px;
+            height: 100px;
+            background: #d4af37;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            transform: rotate(15deg);
+        }
+        
+        .decoration {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.1;
+        }
+        
+        .decoration.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 3px solid #d4af37;
+            border-left: 3px solid #d4af37;
+        }
+        
+        .decoration.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 3px solid #d4af37;
+            border-right: 3px solid #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="watermark">
+            <i class="fas fa-certificate"></i>
+        </div>
+        
+        <div class="decoration top-left"></div>
+        <div class="decoration bottom-right"></div>
+        
+        <div class="certificate-border">
+            <div class="header">
+                <h1>CERTIFICATE OF ACHIEVEMENT</h1>
+                <p>This certificate is proudly presented to</p>
+            </div>
+            
+            <div class="certificate-body">
+                <div class="recipient-name">{{ user.username }}</div>
+                
+                <div class="course-info">
+                    <p>For successfully completing the course</p>
+                    <h2>{{ score.course.name }}</h2>
+                </div>
+                
+                <div class="score">
+                    <p>With an outstanding score of</p>
+                    <div class="score-value">{{ score.score }}%</div>
+                </div>
+                
+                <div class="completion-message">
+                    <p>Your dedication and hard work have been recognized.</p>
+                    <p>Keep up the excellent work in your future endeavors!</p>
+                </div>
+            </div>
+            
+            <div class="signatures">
+                <div class="signature">
+                    <div class="signature-line"></div>
+                    <p>Course Director</p>
+                </div>
+                <div class="signature">
+                    <div class="signature-line"></div>
+                    <p>Date of Completion</p>
+                </div>
+            </div>
+            
+            <div class="date">
+                {{ current_date }}
+            </div>
+            
+            <div class="seal">
+                <div>SEAL</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

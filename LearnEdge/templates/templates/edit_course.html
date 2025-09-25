@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Course</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+            margin: auto;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .form-header i {
+            font-size: 2.5rem;
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+        .form-header h2 {
+            font-weight: 700;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 0.25rem rgba(118, 75, 162, 0.25);
+        }
+        .input-icon {
+            position: relative;
+        }
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: #6c757d;
+            z-index: 10;
+        }
+        .input-icon input {
+            padding-left: 40px;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <i class="fas fa-book-open"></i>
+            <h2>Update Course Details</h2>
+            <p class="text-muted">Edit the course information below</p>
+        </div>
+
+        <form method="POST">
+            <div class="mb-4 input-icon">
+                <label class="form-label"><i class="fas fa-heading me-2"></i>Course Name</label>
+                <i class="fas fa-book"></i>
+                <input type="text" class="form-control" name="name" value="{{ course.name }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fas fa-align-left me-2"></i>Course Contents</label>
+                <textarea class="form-control" name="contents" required>{{ course.contents }}</textarea>
+            </div>
+
+            <div class="mb-4 input-icon">
+                <label class="form-label"><i class="fas fa-clock me-2"></i>Duration (in hours)</label>
+                <i class="fas fa-hourglass-half"></i>
+                <input type="number" class="form-control" name="duration" value="{{ course.duration }}" required>
+            </div>
+
+            <div class="mb-4 input-icon">
+                <label class="form-label"><i class="fas fa-video me-2"></i>Video URL (optional)</label>
+                <i class="fas fa-link"></i>
+                <input type="text" class="form-control" name="video" value="{{ course.video }}">
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-2"></i>Update Course
+            </button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

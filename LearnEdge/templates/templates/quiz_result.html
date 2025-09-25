@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .result-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-display {
+            font-size: 5rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            position: relative;
+            display: inline-block;
+            color: white;
+        }
+        
+        .score-display::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            bottom: -10px;
+            left: 0;
+            border-radius: 5px;
+            animation: expand 1s ease-out;
+        }
+        
+        @keyframes expand {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        .score-text {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .progress-ring {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 2rem;
+        }
+        
+        .progress-ring__circle {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 1.5s ease-in-out;
+        }
+        
+        .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            min-width: 180px;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .celebration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            opacity: 0;
+            animation: confetti 3s ease-in-out infinite;
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .result-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .score-display {
+                font-size: 4rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <div class="celebration" id="celebration"></div>
+        
+        <h2>Quiz Results</h2>
+        
+        <div class="progress-ring">
+            <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r="80" stroke="rgba(255,255,255,0.2)" stroke-width="10" fill="none"></circle>
+                <circle class="progress-ring__circle" cx="90" cy="90" r="80" stroke="#4cc9f0" stroke-width="10" fill="none"
+                        stroke-dasharray="502.4" 
+                        stroke-dashoffset="{{ 502.4 * (1 - score/total) }}"></circle>
+            </svg>
+            <div class="percentage">{{ ((score/total) * 100)|round(0) }}%</div>
+        </div>
+        
+        <div class="score-display">{{ score }}/{{ total }}</div>
+        <p class="score-text">
+            {% if score == total %}
+                Perfect! You're a genius! 🎯
+            {% elif score/total >= 0.8 %}
+                Excellent work! Keep it up! 🌟
+            {% elif score/total >= 0.6 %}
+                Good job! You're getting better! 👍
+            {% else %}
+                Keep practicing! You'll improve! 💪
+            {% endif %}
+        </p>
+        
+        <div class="action-buttons">
+            <a href="{{ url_for('topics') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Topics
+            </a>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                <i class="fas fa-user"></i> View Profile
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Create confetti effect
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#4cc9f0', '#4895ef', '#4361ee', '#3f37c9', '#f72585'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                confetti.style.width = Math.random() * 8 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                celebration.appendChild(confetti);
+            }
+        }
+        
+        // Only show confetti for good scores
+        const score = {{ score }};
+        const total = {{ total }};
+        if (score/total >= 0.7) {
+            createConfetti();
+        }
+    </script>
+</body>
+</html>

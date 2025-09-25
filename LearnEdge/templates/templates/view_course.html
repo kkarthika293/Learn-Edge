@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }} | Learning Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .course-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(13, 110, 253, 0.15);
+        }
+        .video-container {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .course-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        .progress-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        .attendance-tracker {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 2rem;
+        }
+        .btn-complete {
+            background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-complete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(25, 135, 84, 0.3);
+        }
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .resource-item {
+            border-left: 3px solid #0d6efd;
+            transition: all 0.2s;
+        }
+        .resource-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        .tab-content {
+            padding: 20px 0;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: #0d6efd;
+            border-bottom: 3px solid #0d6efd;
+        }
+        .mcq-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .mcq-question {
+            margin-bottom: 1.5rem;
+        }
+        .mcq-option {
+            margin-bottom: 0.5rem;
+        }
+        .mcq-option label {
+            cursor: pointer;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .mcq-option label:hover {
+            background-color: #e9ecef;
+        }
+        .btn-generate-mcq {
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-generate-mcq:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        }
+        .btn-submit-answers {
+            background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #212529;
+            transition: all 0.3s;
+        }
+        .btn-submit-answers:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+        }
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #198754;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="course-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1><i class="fas fa-book-open me-2"></i>{{ course.name }}</h1>
+                    <div class="d-flex align-items-center mt-2">
+                        <span class="badge bg-light text-dark me-2"><i class="fas fa-clock me-1"></i>{{ course.duration }} minutes</span>
+                        <span class="badge bg-light text-dark"><i class="fas fa-star me-1 text-warning"></i>{{ course.rating|default(4.5) }}/5.0</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('cuser_dashboard') }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <h5><i class="fas fa-chart-line me-2 text-primary"></i>Your Progress</h5>
+        <span class="text-primary fw-bold" id="progress-text">0% Complete</span>
+        
+        <div class="progress" style="height: 10px;">
+            <div class="progress-bar bg-primary" id="progress-bar" role="progressbar"
+                style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+
+        <div class="attendance-tracker">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-user-clock me-2 text-primary"></i>Attendance Tracker</h5>
+                    <p class="text-muted mb-md-0">Watch at least {{ required_minutes }} minutes to mark attendance</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="timer-display">
+                        <i class="fas fa-stopwatch me-2"></i>
+                        <span id="minutes">00</span>:<span id="seconds">00</span>
+                    </div>
+                    <div class="mt-2">
+                        <span id="attendance-status" class="badge bg-secondary">Not Started</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if course.video %}
+        <div class="video-container">
+            {% if "youtube.com" in course.video or "youtu.be" in course.video %}
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.youtube.com/embed/{{ course.video.split('/')[-1] }}" 
+                            title="{{ course.name }}" 
+                            allowfullscreen></iframe>
+                </div>
+            {% else %}
+                <div class="ratio ratio-16x9">
+                    <video controls id="course-video">
+                        <source src="{{ url_for('static', filename='videos/' + course.video) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+
+        <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="content-tab" data-bs-toggle="tab" data-bs-target="#content" type="button" role="tab">
+                    <i class="fas fa-file-alt me-1"></i> Course Content
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resources" type="button" role="tab">
+                    <i class="fas fa-file-download me-1"></i> Resources
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="discussion-tab" data-bs-toggle="tab" data-bs-target="#discussion" type="button" role="tab">
+                    <i class="fas fa-comments me-1"></i> Discussion
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mcq-tab" data-bs-toggle="tab" data-bs-target="#mcq" type="button" role="tab">
+                    <i class="fas fa-question-circle me-1"></i> MCQ Test
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="courseTabsContent">
+            <div class="tab-pane fade show active" id="content" role="tabpanel">
+                <div class="course-content">
+                    <h4><i class="fas fa-info-circle me-2 text-primary"></i>About This Course</h4>
+                    <p>{{ course.contents }}</p>
+                    <h4 class="mt-4"><i class="fas fa-list-ol me-2 text-primary"></i>Syllabus</h4>
+                    <div class="accordion" id="syllabusAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                    Syllabus
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#syllabusAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group">
+                                        {% for video in course.videos %}
+                                            <li class="list-group-item border-0">
+                                                <i class="fas fa-play-circle me-2 text-primary"></i>
+                                                <a href="{{ video.video_link }}" target="_blank">Watch Video {{ loop.index }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="resources" role="tabpanel">
+                <div class="course-content">
+                    <h4><i class="fas fa-file-download me-2 text-primary"></i>Downloadable Resources</h4>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action resource-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-file-pdf me-2 text-primary"></i>
+                                    Course Notes
+                                </div>
+                                {% if course.pdf_file %}
+                                    <a href="{{ url_for('download_pdf', filename=course.pdf_file) }}" class="btn btn-primary mt-3">
+                                        <i class="fas fa-download me-2"></i> Download Course PDF
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+            <div class="tab-pane fade" id="discussion" role="tabpanel">
+                <div class="course-content">
+                    <h4><i class="fas fa-comments me-2 text-primary"></i>Course Discussion</h4>
+                    <div class="mb-4">
+                        <textarea class="form-control mb-2" rows="3" placeholder="Ask a question or share your thoughts..."></textarea>
+                        <button class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> Post</button>
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="user-avatar-sm bg-primary text-white">U</div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">User</h6>
+                                    <p class="mb-1">Great course!</p>
+                                    <small class="text-muted">2025-04-15</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="mcq" role="tabpanel">
+                <div class="mcq-container">
+                    <h4><i class="fas fa-question-circle me-2 text-primary"></i>MCQ Test</h4>
+                    <button class="btn btn-generate-mcq mb-3" id="generateMcqBtn">
+                        <i class="fas fa-plus-circle me-1"></i> Generate MCQ Test
+                    </button>
+                    <div id="mcqQuestions"></div>
+                    <div id="scoreDisplay" class="score-display"></div>
+                    <button class="btn btn-submit-answers mt-3" id="submitAnswersBtn" style="display: none;">
+                        <i class="fas fa-check me-1"></i> Submit Answers
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('complete_course', course_id=course.id) }}" class="btn btn-complete btn-lg" id="completeBtn" disabled>
+                <i class="fas fa-check-circle me-2"></i> Mark as Completed
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attendance Timer Logic
+            const minutesDisplay = document.getElementById('minutes');
+            const secondsDisplay = document.getElementById('seconds');
+            const statusDisplay = document.getElementById('attendance-status');
+            const requiredMinutes = {{ required_minutes }};
+            const requiredSeconds = requiredMinutes * 60;
+            let totalSeconds = 0;
+            let timerInterval;
+            let isTracking = false;
+
+            document.querySelector('video')?.addEventListener('play', startTimer);
+            document.querySelector('video')?.addEventListener('pause', stopTimer);
+            document.querySelector('video')?.addEventListener('ended', stopTimer);
+
+            if (document.querySelector('iframe')) {
+                window.addEventListener('focus', checkIfWatching);
+                window.addEventListener('blur', stopTimer);
+            }
+
+            function startTimer() {
+                if (!isTracking) {
+                    isTracking = true;
+                    timerInterval = setInterval(updateTimer, 1000);
+                    statusDisplay.className = 'badge bg-info';
+                    statusDisplay.textContent = 'In Progress';
+                }
+            }
+
+            function stopTimer() {
+                if (isTracking) {
+                    clearInterval(timerInterval);
+                    isTracking = false;
+                    if (totalSeconds >= requiredSeconds) {
+                        statusDisplay.className = 'badge bg-success';
+                        statusDisplay.textContent = 'Completed';
+                        document.getElementById('completeBtn').disabled = false;
+                    } else {
+                        statusDisplay.className = 'badge bg-warning text-dark';
+                        statusDisplay.textContent = 'Paused';
+                    }
+                }
+            }
+
+            function updateTimer() {
+                totalSeconds++;
+                updateDisplay();
+                if (totalSeconds >= requiredSeconds) {
+                    stopTimer();
+                    recordAttendance();
+                }
+            }
+
+            function updateDisplay() {
+                const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+                const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+                minutesDisplay.textContent = minutes;
+                secondsDisplay.textContent = seconds;
+            }
+
+            function checkIfWatching() {
+                startTimer();
+            }
+
+            function recordAttendance() {
+                fetch('/api/record-attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        course_id: {{ course.id }},
+                        duration: totalSeconds,
+                        completed: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Attendance recorded:', data))
+                .catch(error => console.error('Error:', error));
+            }
+
+            updateDisplay();
+
+            // MCQ Test Logic
+            const generateMcqBtn = document.getElementById('generateMcqBtn');
+            const mcqQuestionsDiv = document.getElementById('mcqQuestions');
+            const submitAnswersBtn = document.getElementById('submitAnswersBtn');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            let mcqs = [];
+
+            generateMcqBtn.addEventListener('click', function() {
+                fetch(`/generate_mcq/{{ course.id }}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert('Error generating MCQs: ' + data.error);
+                            return;
+                        }
+                        mcqs = data.mcqs;
+                        renderMcqs();
+                        submitAnswersBtn.style.display = 'block';
+                    })
+                    .catch(error => {
+                        alert('Error generating MCQs: ' + error);
+                    });
+            });
+
+            submitAnswersBtn.addEventListener('click', function() {
+                let score = 0;
+                mcqs.forEach((mcq, index) => {
+                    const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                    if (selectedOption && parseInt(selectedOption.value) === mcq.correct_answer) {
+                        score++;
+                    }
+                });
+                scoreDisplay.textContent = `Your Score: ${score} out of ${mcqs.length}`;
+                submitAnswersBtn.disabled = true;
+            });
+
+            function renderMcqs() {
+                mcqQuestionsDiv.innerHTML = '';
+                mcqs.forEach((mcq, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'mcq-question';
+                    questionDiv.innerHTML = `
+                        <h5>Question ${index + 1}: ${mcq.question}</h5>
+                        ${mcq.options.map((option, optIndex) => `
+                            <div class="mcq-option">
+                                <input type="radio" name="question${index}" id="q${index}o${optIndex}" value="${optIndex}">
+                                <label for="q${index}o${optIndex}">${option}</label>
+                            </div>
+                        `).join('')}
+                    `;
+                    mcqQuestionsDiv.appendChild(questionDiv);
+                });
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const targetProgress = {{ progress }};  // e.g., 85
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+
+        const duration = 2000000; // 2000 ms = 2 seconds
+        const startTime = performance.now();
+
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min((elapsed / duration) * targetProgress, targetProgress);
+            const progressRounded = Math.floor(progress);
+
+            progressBar.style.width = progress + "%";
+            progressBar.setAttribute("aria-valuenow", progressRounded);
+            progressText.textContent = progressRounded + "% Complete";
+
+            if (progress < targetProgress) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }} | Learning Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Previous styles remain the same */
+        
+        /* New styles for MCQ popup */
+        .mcq-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateY(150%);
+            transition: transform 0.3s ease-out;
+        }
+        .mcq-popup.show {
+            transform: translateY(0);
+        }
+        .mcq-popup-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            color: white;
+            padding: 15px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mcq-popup-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .mcq-popup-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .mcq-popup-footer {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            text-align: right;
+        }
+        .mcq-popup-timer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffc107;
+            color: #212529;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Previous HTML content remains the same until the end of the body -->
+
+    <!-- MCQ Popup -->
+    <div class="mcq-popup" id="mcqPopup">
+        <div class="mcq-popup-timer" id="mcqPopupTimer">5:00</div>
+        <div class="mcq-popup-header">
+            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Quick Knowledge Check</h5>
+            <button class="mcq-popup-close" id="closeMcqPopup">&times;</button>
+        </div>
+        <div class="mcq-popup-body" id="mcqPopupQuestions">
+            <!-- Questions will be inserted here -->
+        </div>
+        <div class="mcq-popup-footer">
+            <button class="btn btn-primary btn-sm" id="submitPopupMcq">Submit Answers</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Previous timer and MCQ logic remains the same
+            
+            // New MCQ Popup Logic
+            const mcqPopup = document.getElementById('mcqPopup');
+            const mcqPopupQuestions = document.getElementById('mcqPopupQuestions');
+            const closeMcqPopup = document.getElementById('closeMcqPopup');
+            const submitPopupMcq = document.getElementById('submitPopupMcq');
+            const mcqPopupTimer = document.getElementById('mcqPopupTimer');
+            
+            let popupMcqs = [];
+            let popupTimerInterval;
+            let popupSecondsLeft = 300; // 5 minutes
+            
+            // Start the popup timer
+            startPopupTimer();
+            
+            function startPopupTimer() {
+                popupTimerInterval = setInterval(function() {
+                    popupSecondsLeft--;
+                    updatePopupTimerDisplay();
+                    
+                    if (popupSecondsLeft <= 0) {
+                        clearInterval(popupTimerInterval);
+                        showMcqPopup();
+                    }
+                }, 1000);
+            }
+            
+            function updatePopupTimerDisplay() {
+                const minutes = Math.floor(popupSecondsLeft / 60);
+                const seconds = popupSecondsLeft % 60;
+                mcqPopupTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            function showMcqPopup() {
+                // Generate programming-related MCQs
+                popupMcqs = [
+                    {
+                        question: "What does the 'DOM' stand for in web development?",
+                        options: [
+                            "Document Object Model",
+                            "Data Object Management",
+                            "Digital Output Module",
+                            "Display Object Method"
+                        ],
+                        correct_answer: 0
+                    },
+                    {
+                        question: "Which of the following is NOT a JavaScript data type?",
+                        options: [
+                            "String",
+                            "Boolean",
+                            "Integer",
+                            "Symbol"
+                        ],
+                        correct_answer: 2
+                    },
+                    {
+                        question: "What does CSS stand for?",
+                        options: [
+                            "Cascading Style Sheets",
+                            "Computer Style Sheets",
+                            "Creative Style System",
+                            "Colorful Style Syntax"
+                        ],
+                        correct_answer: 0
+                    }
+                ];
+                
+                renderPopupMcqs();
+                mcqPopup.classList.add('show');
+                
+                // Reset timer for next popup
+                popupSecondsLeft = 300;
+                startPopupTimer();
+            }
+            
+            function renderPopupMcqs() {
+                mcqPopupQuestions.innerHTML = '';
+                popupMcqs.forEach((mcq, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'mcq-question mb-3';
+                    questionDiv.innerHTML = `
+                        <h6>${index + 1}. ${mcq.question}</h6>
+                        ${mcq.options.map((option, optIndex) => `
+                            <div class="mcq-option">
+                                <input type="radio" name="popupQuestion${index}" id="popupQ${index}o${optIndex}" value="${optIndex}">
+                                <label for="popupQ${index}o${optIndex}">${option}</label>
+                            </div>
+                        `).join('')}
+                    `;
+                    mcqPopupQuestions.appendChild(questionDiv);
+                });
+            }
+            
+            closeMcqPopup.addEventListener('click', function() {
+                mcqPopup.classList.remove('show');
+            });
+            
+            submitPopupMcq.addEventListener('click', function() {
+                let score = 0;
+                popupMcqs.forEach((mcq, index) => {
+                    const selectedOption = document.querySelector(`input[name="popupQuestion${index}"]:checked`);
+                    if (selectedOption && parseInt(selectedOption.value) === mcq.correct_answer) {
+                        score++;
+                    }
+                });
+                
+                alert(`You scored ${score} out of ${popupMcqs.length}!`);
+                mcqPopup.classList.remove('show');
+            });
+            
+            // Initialize timer display
+            updatePopupTimerDisplay();
+        });
+    </script>
+</body>
+</html>

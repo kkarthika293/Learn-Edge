@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Resume Builder</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        .template {
+            display: none;
+        }
+
+        .template.active {
+            display: block;
+        }
+
+        /* Professional Template Styles */
+        #professionalTemplate {
+            color: #333;
+        }
+
+        #professionalTemplate .header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        #professionalTemplate h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Creative Template Styles */
+        #creativeTemplate {
+            background: linear-gradient(45deg, var(--primary-light), #ffffff);
+            border-radius: 10px;
+            padding: 2rem;
+        }
+
+        #creativeTemplate .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        #creativeTemplate h3 {
+            font-family: 'Georgia', serif;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+        }
+
+        /* Modern Template Styles */
+        #modernTemplate {
+            border: 1px solid var(--primary-light);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #modernTemplate .header {
+            display: flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+        }
+
+        #modernTemplate h3 {
+            background: var(--primary-light);
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        /* Color Themes */
+        .theme-blue {
+            --primary-color: #3b82f6;
+            --primary-light: #93c5fd;
+        }
+
+        .theme-green {
+            --primary-color: #10b981;
+            --primary-light: #a7f3d0;
+        }
+
+        .theme-purple {
+            --primary-color: #8b5cf6;
+            --primary-light: #c4b5fd;
+        }
+
+        .theme-red {
+            --primary-color: #ef4444;
+            --primary-light: #fca5a5;
+        }
+
+        .theme-dark {
+            --primary-color: #1f2937;
+            --primary-light: #9ca3af;
+        }
+
+        .theme-orange {
+            --primary-color: #f97316;
+            --primary-light: #fed7aa;
+        }
+
+        .theme-teal {
+            --primary-color: #14b8a6;
+            --primary-light: #99f6e4;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            #resumePreview {
+                padding: 1.5rem;
+            }
+            
+            #professionalTemplate .header,
+            #creativeTemplate .header,
+            #modernTemplate .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            #previewPhotoContainer {
+                margin-top: 1rem;
+                margin-left: 0;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            #resumePreview, #resumePreview * {
+                visibility: visible;
+            }
+            
+            #resumePreview {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container-fluid">
+        <header class="bg-blue-600 text-white p-4 shadow-md">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Modern Resume Builder</h1>
+                <button id="downloadBtn" class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-100 transition flex items-center">
+                    <span class="material-icons mr-2">download</span>
+                    Download PDF
+                </button>
+            </div>
+        </header>
+
+        <div class="container mx-auto my-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Left Sidebar - Form Controls -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Resume Details</h2>
+                    
+                    <!-- Template Selection -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Choose Template</label>
+                        <select id="templateSelect" class="w-full p-2 border rounded-md">
+                            <option value="professional">Professional</option>
+                            <option value="creative">Creative</option>
+                            <option value="modern">Modern</option>
+                     
+                        </select>
+                    </div>
+                    
+                    <!-- Color Theme -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Color Theme</label>
+                        <div class="flex space-x-2 flex-wrap">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 cursor-pointer" data-color="blue"></div>
+                            <div class="w-8 h-8 rounded-full bg-green-600 cursor-pointer" data-color="green"></div>
+                            <div class="w-8 h-8 rounded-full bg-purple-600 cursor-pointer" data-color="purple"></div>
+                            <div class="w-8 h-8 rounded-full bg-red-600 cursor-pointer" data-color="red"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-800 cursor-pointer" data-color="dark"></div>
+                            <div class="w-8 h-8 rounded-full bg-orange-600 cursor-pointer" data-color="orange"></div>
+                            <div class="w-8 h-8 rounded-full bg-teal-600 cursor-pointer" data-color="teal"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Information Form -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium mb-3 text-gray-800">Personal Information</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="fullName" placeholder="Full Name" class="w-full p-2 border rounded-md">
+                            <input type="text" id="jobTitle" placeholder="Job Title" class="w-full p-2 border rounded-md">
+                            <input type="email" id="email" placeholder="Email" class="w-full p-2 border rounded-md">
+                            <input type="tel" id="phone" placeholder="Phone" class="w-full p-2 border rounded-md">
+                            <input type="text" id="address" placeholder="Address" class="w-full p-2 border rounded-md">
+                            <textarea id="summary" placeholder="Professional Summary" class="w-full p-2 border rounded-md" rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Sections -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium mb-3 text-gray-800">Add Sections</h3>
+                        <div class="space-y-2">
+                            <button id="addExperience" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md flex items-center">
+                                <span class="material-icons mr-2">work</span>
+                                Add Experience
+                            </button>
+                            <button id="addEducation" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md flex items-center">
+                                <span class="material-icons mr-2">school</span>
+                                Add Education
+                            </button>
+                            <button id="addSkill" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md flex items-center">
+                                <span class="material-icons mr-2">star</span>
+                                Add Skill
+                            </button>
+                            <button id="addProject" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md flex items-center">
+                                <span class="material-icons mr-2">folder</span>
+                                Add Project
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview Options -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium mb-3 text-gray-800">Preview Options</h3>
+                        <div class="flex items-center mb-2">
+                            <input type="checkbox" id="showPhoto" class="mr-2">
+                            <label for="showPhoto">Include Profile Photo</label>
+                        </div>
+                        <div id="photoUpload" class="hidden">
+                            <input type="file" id="profilePhoto" accept="image/*" class="w-full p-2 border rounded-md">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resume Preview -->
+                <div class="lg:col-span-3">
+                    <div id="resumePreview" class="bg-white p-8 rounded-lg shadow-lg">
+                        <!-- Professional Template -->
+                        <div id="professionalTemplate" class="template">
+                            <div class="header flex justify-between items-center mb-8">
+                                <div>
+                                    <h1 id="previewName" class="text-3xl font-bold text-gray-800">John Doe</h1>
+                                    <h2 id="previewTitle" class="text-xl text-blue-600">Software Engineer</h2>
+                                </div>
+                                <div id="previewPhotoContainer" class="hidden">
+                                    <img id="previewPhoto" src="" alt="Profile Photo" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <!-- Left Column -->
+                                <div class="md:col-span-1">
+                                    <!-- Contact Info -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Contact</h3>
+                                        <div class="space-y-2">
+                                            <p id="previewEmail" class="flex items-center">
+                                                <span class="material-icons mr-2 text-blue-600">email</span>
+                                                john.doe@example.com
+                                            </p>
+                                            <p id="previewPhone" class="flex items-center">
+                                                <span class="material-icons mr-2 text-blue-600">phone</span>
+                                                (123) 456-7890
+                                            </p>
+                                            <p id="previewAddress" class="flex items-center">
+                                                <span class="material-icons mr-2 text-blue-600">location_on</span>
+                                                123 Main St, City, Country
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Skills -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Skills</h3>
+                                        <ul id="previewSkills" class="space-y-2">
+                                            <li class="flex items-center">
+                                                <span class="material-icons mr-2 text-blue-600">star</span>
+                                                JavaScript
+                                            </li>
+                                            <li class="flex items-center">
+                                                <span class="material-icons mr-2 text-blue-600">star</span>
+                                                React
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Column -->
+                                <div class="md:col-span-2">
+                                    <!-- Summary -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Summary</h3>
+                                        <p id="previewSummary" class="text-gray-700">
+                                            Experienced software engineer with 5+ years of experience in web development. 
+                                            Specialized in JavaScript frameworks and cloud technologies.
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Experience -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Experience</h3>
+                                        <div id="previewExperience" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Senior Developer</h4>
+                                                <p class="text-blue-600">Tech Company Inc. | 2019 - Present</p>
+                                                <p class="text-gray-700">Lead a team of developers to build scalable web applications.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Education -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Education</h3>
+                                        <div id="previewEducation" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Master of Computer Science</h4>
+                                                <p class="text-blue-600">State University | 2014 - 2016</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Projects -->
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white bg-blue-600 px-3 py-1 rounded-md mb-3">Projects</h3>
+                                        <div id="previewProjects" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">E-commerce Platform</h4>
+                                                <p class="text-gray-700">Built a full-stack e-commerce solution with React and Node.js.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creative Template -->
+                        <div id="creativeTemplate" class="template">
+                            <div class="header mb-8">
+                                <h1 id="creativeName" class="text-3xl font-bold">John Doe</h1>
+                                <h2 id="creativeTitle" class="text-xl">Software Engineer</h2>
+                                <div id="creativePhotoContainer" class="hidden mt-4">
+                                    <img id="creativePhoto" src="" alt="Profile Photo" class="w-32 h-32 rounded-full object-cover border-4 border-white">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-8">
+                                <!-- Summary -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">Summary</h3>
+                                    <p id="creativeSummary" class="text-gray-700">
+                                        Experienced software engineer with 5+ years of experience in web development.
+                                    </p>
+                                </div>
+                                
+                                <!-- Experience -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">Experience</h3>
+                                    <div id="creativeExperience" class="space-y-4">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Senior Developer</h4>
+                                            <p class="text-gray-600">Tech Company Inc. | 2019 - Present</p>
+                                            <p class="text-gray-700">Lead a team of developers to build scalable web applications.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Education -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">Education</h3>
+                                    <div id="creativeEducation" class="space-y-4">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Master of Computer Science</h4>
+                                            <p class="text-gray-600">State University | 2014 - 2016</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Skills & Contact -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3">Skills</h3>
+                                        <ul id="creativeSkills" class="space-y-2">
+                                            <li class="flex items-center">
+                                                <span class="material-icons mr-2">star</span>
+                                                JavaScript
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3">Contact</h3>
+                                        <div id="creativeContact" class="space-y-2">
+                                            <p id="creativeEmail" class="flex items-center">
+                                                <span class="material-icons mr-2">email</span>
+                                                john.doe@example.com
+                                            </p>
+                                            <p id="creativePhone" class="flex items-center">
+                                                <span class="material-icons mr-2">phone</span>
+                                                (123) 456-7890
+                                            </p>
+                                            <p id="creativeAddress" class="flex items-center">
+                                                <span class="material-icons mr-2">location_on</span>
+                                                123 Main St
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Projects -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">Projects</h3>
+                                    <div id="creativeProjects" class="space-y-4">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">E-commerce Platform</h4>
+                                            <p class="text-gray-700">Built a full-stack e-commerce solution with React and Node.js.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Template -->
+                        <div id="modernTemplate" class="template">
+                            <div class="header mb-8">
+                                <div class="flex-1">
+                                    <h1 id="modernName" class="text-3xl font-bold">John Doe</h1>
+                                    <h2 id="modernTitle" class="text-xl">Software Engineer</h2>
+                                </div>
+                                <div id="modernPhotoContainer" class="hidden">
+                                    <img id="modernPhoto" src="" alt="Profile Photo" class="w-24 h-24 rounded-full object-cover">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <!-- Summary -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-3">Summary</h3>
+                                        <p id="modernSummary" class="text-gray-700">
+                                            Experienced software engineer with 5+ years of experience.
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Skills -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-3">Skills</h3>
+                                        <ul id="modernSkills" class="space-y-2">
+                                            <li class="flex items-center">
+                                                <span class="material-icons mr-2">star</span>
+                                                JavaScript
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Contact -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-3">Contact</h3>
+                                        <div id="modernContact" class="space-y-2">
+                                            <p id="modernEmail" class="flex items-center">
+                                                <span class="material-icons mr-2">email</span>
+                                                john.doe@example.com
+                                            </p>
+                                            <p id="modernPhone" class="flex items-center">
+                                                <span class="material-icons mr-2">phone</span>
+                                                (123) 456-7890
+                                            </p>
+                                            <p id="modernAddress" class="flex items-center">
+                                                <span class="material-icons mr-2">location_on</span>
+                                                123 Main St
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <!-- Experience -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-3">Experience</h3>
+                                        <div id="modernExperience" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Senior Developer</h4>
+                                                <p class="text-gray-600">Tech Company Inc. | 2019 - Present</p>
+                                                <p class="text-gray-700">Lead a team of developers to build scalable web applications.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Education -->
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-semibold mb-3">Education</h3>
+                                        <div id="modernEducation" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Master of Computer Science</h4>
+                                                <p class="text-gray-600">State University | 2014 - 2016</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Projects -->
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3">Projects</h3>
+                                        <div id="modernProjects" class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">E-commerce Platform</h4>
+                                                <p class="text-gray-700">Built a full-stack e-commerce solution with React and Node.js.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for Adding Sections -->
+    <!-- Experience Modal -->
+    <div class="modal fade" id="experienceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Work Experience</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="experienceForm">
+                        <div class="mb-3">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="expTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-control" id="expCompany" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Start Date</label>
+                                <input type="month" class="form-control" id="expStart" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">End Date</label>
+                                <input type="month" class="form-control" id="expEnd">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="expCurrent">
+                                    <label class="form-check-label">Currently work here</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="expDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveExperience">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education Modal -->
+    <div class="modal fade" id="educationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Education</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="educationForm">
+                        <div class="mb-3">
+                            <label class="form-label">Degree</label>
+                            <input type="text" class="form-control" id="eduDegree" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Institution</label>
+                            <input type="text" class="form-control" id="eduInstitution" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Start Date</label>
+                                <input type="month" class="form-control" id="eduStart" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">End Date</label>
+                                <input type="month" class="form-control" id="eduEnd">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="eduCurrent">
+                                    <label class="form-check-label">Currently studying</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="eduDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveEducation">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Modal -->
+    <div class="modal fade" id="skillModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Skill</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="skillForm">
+                        <div class="mb-3">
+                            <label class="form-label">Skill Name</label>
+                            <input type="text" class="form-control" id="skillName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Proficiency</label>
+                            <select class="form-select" id="skillLevel">
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveSkill">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="projectForm">
+                        <div class="mb-3">
+                            <label class="form-label">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Technologies Used</label>
+                            <input type="text" class="form-control" id="projectTech" placeholder="Comma separated list">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="projectDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Project URL (optional)</label>
+                            <input type="url" class="form-control" id="projectUrl">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProject">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap modals
+            const experienceModal = new bootstrap.Modal(document.getElementById('experienceModal'));
+            const educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
+            const skillModal = new bootstrap.Modal(document.getElementById('skillModal'));
+            const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
+            
+            // Set default template
+            document.getElementById('professionalTemplate').classList.add('active');
+            
+            // Set default theme
+            setTheme('blue');
+            
+            // Event Listeners for form inputs
+            const updatePreview = (inputId, previewId, defaultValue, isContact = false, templatePrefix = '') => {
+                document.getElementById(inputId).addEventListener('input', function() {
+                    const value = this.value || defaultValue;
+                    const templates = ['professional', 'creative', 'modern'];
+                    templates.forEach(template => {
+                        const element = document.getElementById(`${templatePrefix}${template}${previewId}`);
+                        if (element) {
+                            if (isContact) {
+                                element.innerHTML = `
+                                    <span class="material-icons mr-2 text-${document.getElementById('resumePreview').classList[0].split('-')[1]}-600">email</span>
+                                    ${value}
+                                `;
+                            } else {
+                                element.textContent = value;
+                            }
+                        }
+                    });
+                });
+            };
+            
+            updatePreview('fullName', 'Name', 'John Doe', false, '');
+            updatePreview('jobTitle', 'Title', 'Software Engineer', false, '');
+            updatePreview('email', 'Email', 'john.doe@example.com', true, '');
+            updatePreview('phone', 'Phone', '(123) 456-7890', true, '');
+            updatePreview('address', 'Address', '123 Main St, City, Country', true, '');
+            updatePreview('summary', 'Summary', 
+                'Experienced software engineer with 5+ years of experience in web development. Specialized in JavaScript frameworks and cloud technologies.', 
+                false, ''
+            );
+            
+            // Show/hide photo upload
+            document.getElementById('showPhoto').addEventListener('change', function() {
+                const photoUpload = document.getElementById('photoUpload');
+                const photoContainers = [
+                    document.getElementById('previewPhotoContainer'),
+                    document.getElementById('creativePhotoContainer'),
+                    document.getElementById('modernPhotoContainer')
+                ];
+                
+                if (this.checked) {
+                    photoUpload.classList.remove('hidden');
+                    photoContainers.forEach(container => container.classList.remove('hidden'));
+                } else {
+                    photoUpload.classList.add('hidden');
+                    photoContainers.forEach(container => container.classList.add('hidden'));
+                }
+            });
+            
+            // Handle photo upload
+            document.getElementById('profilePhoto').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        ['previewPhoto', 'creativePhoto', 'modernPhoto'].forEach(id => {
+                            document.getElementById(id).setAttribute('src', event.target.result);
+                        });
+                    };
+                    
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Template selection
+            document.getElementById('templateSelect').addEventListener('change', function() {
+                const templates = document.querySelectorAll('.template');
+                templates.forEach(template => template.classList.remove('active'));
+                
+                const selectedTemplate = document.getElementById(`${this.value}Template`);
+                if (selectedTemplate) {
+                    selectedTemplate.classList.add('active');
+                }
+            });
+            
+            // Color theme selection
+            document.querySelectorAll('[data-color]').forEach(colorSwatch => {
+                colorSwatch.addEventListener('click', function() {
+                    setTheme(this.getAttribute('data-color'));
+                });
+            });
+            
+            // Add section buttons
+            document.getElementById('addExperience').addEventListener('click', function() {
+                experienceModal.show();
+            });
+            
+            document.getElementById('addEducation').addEventListener('click', function() {
+                educationModal.show();
+            });
+            
+            document.getElementById('addSkill').addEventListener('click', function() {
+                skillModal.show();
+            });
+            
+            document.getElementById('addProject').addEventListener('click', function() {
+                projectModal.show();
+            });
+            
+            // Save experience
+            document.getElementById('saveExperience').addEventListener('click', function() {
+                const title = document.getElementById('expTitle').value;
+                const company = document.getElementById('expCompany').value;
+                const start = document.getElementById('expStart').value;
+                let end = document.getElementById('expEnd').value;
+                const isCurrent = document.getElementById('expCurrent').checked;
+                const description = document.getElementById('expDescription').value;
+                
+                if (isCurrent) {
+                    end = 'Present';
+                }
+                
+                if (title && company && start) {
+                    const experienceHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800">${title}</h4>
+                            <p class="text-${document.getElementById('resumePreview').classList[0].split('-')[1]}-600">${company} | ${formatDate(start)} - ${formatDate(end)}</p>
+                            ${description ? `<p class="text-gray-700 mt-1">${description}</p>` : ''}
+                        </div>
+                    `;
+                    
+                    ['previewExperience', 'creativeExperience', 'modernExperience'].forEach(id => {
+                        document.getElementById(id).insertAdjacentHTML('beforeend', experienceHTML);
+                    });
+                    
+                    experienceModal.hide();
+                    clearForm('experienceForm');
+                }
+            });
+            
+            // Save education
+            document.getElementById('saveEducation').addEventListener('click', function() {
+                const degree = document.getElementById('eduDegree').value;
+                const institution = document.getElementById('eduInstitution').value;
+                const start = document.getElementById('eduStart').value;
+                let end = document.getElementById('eduEnd').value;
+                const isCurrent = document.getElementById('eduCurrent').checked;
+                const description = document.getElementById('eduDescription').value;
+                
+                if (isCurrent) {
+                    end = 'Present';
+                }
+                
+                if (degree && institution && start) {
+                    const educationHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800">${degree}</h4>
+                            <p class="text-${document.getElementById('resumePreview').classList[0].split('-')[1]}-600">${institution} | ${formatDate(start)} - ${formatDate(end)}</p>
+                            ${description ? `<p class="text-gray-700 mt-1">${description}</p>` : ''}
+                        </div>
+                    `;
+                    
+                    ['previewEducation', 'creativeEducation', 'modernEducation'].forEach(id => {
+                        document.getElementById(id).insertAdjacentHTML('beforeend', educationHTML);
+                    });
+                    
+                    educationModal.hide();
+                    clearForm('educationForm');
+                }
+            });
+            
+            // Save skill
+            document.getElementById('saveSkill').addEventListener('click', function() {
+                const name = document.getElementById('skillName').value;
+                const level = document.getElementById('skillLevel').value;
+                
+                if (name) {
+                    const skillHTML = `
+                        <li class="flex items-center">
+                            <span class="material-icons mr-2 text-${document.getElementById('resumePreview').classList[0].split('-')[1]}-600">star</span>
+                            ${name} ${level ? `(${level})` : ''}
+                        </li>
+                    `;
+                    
+                    ['previewSkills', 'creativeSkills', 'modernSkills'].forEach(id => {
+                        document.getElementById(id).insertAdjacentHTML('beforeend', skillHTML);
+                    });
+                    
+                    skillModal.hide();
+                    clearForm('skillForm');
+                }
+            });
+            
+            // Save project
+            document.getElementById('saveProject').addEventListener('click', function() {
+                const name = document.getElementById('projectName').value;
+                const tech = document.getElementById('projectTech').value;
+                const description = document.getElementById('projectDescription').value;
+                const url = document.getElementById('projectUrl').value;
+                
+                if (name) {
+                    let projectHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800">${name}</h4>
+                    `;
+                    
+                    if (tech) {
+                        projectHTML += `<p class="text-sm text-gray-600">${tech}</p>`;
+                    }
+                    
+                    if (description) {
+                        projectHTML += `<p class="text-gray-700 mt-1">${description}</p>`;
+                    }
+                    
+                    if (url) {
+                        projectHTML += `<a href="${url}" target="_blank" class="text-${document.getElementById('resumePreview').classList[0].split('-')[1]}-600 text-sm">View Project</a>`;
+                    }
+                    
+                    projectHTML += `</div>`;
+                    
+                    ['previewProjects', 'creativeProjects', 'modernProjects'].forEach(id => {
+                        document.getElementById(id).insertAdjacentHTML('beforeend', projectHTML);
+                    });
+                    
+                    projectModal.hide();
+                    clearForm('projectForm');
+                }
+            });
+            
+            // Download as PDF
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                const element = document.getElementById('resumePreview');
+                const opt = {
+                    margin: 10,
+                    filename: 'my_resume.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                // Temporarily show all sections for printing
+                const hiddenSections = document.querySelectorAll('#resumePreview .hidden');
+                hiddenSections.forEach(section => section.classList.remove('hidden'));
+                
+                html2pdf().from(element).set(opt).save().then(() => {
+                    // Restore hidden sections after printing
+                    hiddenSections.forEach(section => section.classList.add('hidden'));
+                });
+            });
+            
+            // Helper Functions
+            function setTheme(color) {
+                const resumePreview = document.getElementById('resumePreview');
+                
+                // Remove all theme classes
+                resumePreview.classList.remove('theme-blue', 'theme-green', 'theme-purple', 'theme-red', 'theme-dark', 'theme-orange', 'theme-teal');
+                
+                // Add selected theme class
+                resumePreview.classList.add(`theme-${color}`);
+                
+                // Update all primary color elements
+                const primaryElements = document.querySelectorAll('[class*="text-blue-600"], [class*="bg-blue-600"], [class*="border-blue-600"]');
+                primaryElements.forEach(el => {
+                    el.className = el.className.replace(/text-blue-600|bg-blue-600|border-blue-600/g, 
+                        match => match.replace('blue', color));
+                });
+            }
+            
+            function formatDate(dateString) {
+                if (!dateString || dateString === 'Present') return dateString;
+                
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+            }
+            
+            function clearForm(formId) {
+                document.getElementById(formId).reset();
+            }
+        });
+    </script>
+</body>
+</html>
